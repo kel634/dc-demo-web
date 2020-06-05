@@ -4,12 +4,18 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import App from './components/App';
 import theme from './theme';
+import { createBrowserHistory } from "history";
+import { Router } from 'react-router-dom';
+
+const history = createBrowserHistory();
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
     <CssBaseline />
-    <App />
+    <Router history={history}>
+      <App />
+    </Router>
   </ThemeProvider>,
   document.querySelector('#root'),
 );

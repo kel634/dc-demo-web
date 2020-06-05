@@ -6,6 +6,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { Folder } from '../models/Folder';
 import { tempData } from '../models/TempData';
+import { Link as RouterLink } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -15,11 +17,16 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FolderTree() {
+export default function FolderTree(props: any) {
   const classes = useStyles();
+  let history = useHistory();
+
+  const showFolderAssets = (folder: Folder) => {
+    history.push(`/${folder.id || ''}`);
+  }
 
   const renderTree = (folder: Folder) => (
-    <TreeItem key={folder.id} nodeId={folder.id?.toString() || 'root'} label={folder.name}>
+    <TreeItem key={folder.id} nodeId={folder.id?.toString() || 'root'} label={folder.name} onClick={() => showFolderAssets(folder)}>
       {Array.isArray(folder.subFolders) ? folder.subFolders.map((node: any) => renderTree(node)) : null}
     </TreeItem>
   );

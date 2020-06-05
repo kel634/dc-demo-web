@@ -36,7 +36,7 @@ export default function AssetCard(props: { asset: Asset }) {
         />
         <CardContent className={classes.cardContent}>
           <Typography gutterBottom variant="h5" component="h2">
-            Asset Title
+            {props.asset.displayName}
           </Typography>
           <Typography>
             AssetID = { props.asset.id }

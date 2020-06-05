@@ -14,6 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import FolderTree from './FolderTree';
 import AssetCardList from './AssetCardList';
+import { Route, Router } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -151,7 +152,7 @@ export default function Album() {
       </Drawer>
       <main className={clsx(classes.content, { [classes.contentShift]: drawerOpen })}>
         <Container className={classes.cardGrid} maxWidth="md">
-          <AssetCardList assets={[]} />
+          <Route component={AssetCardList} />;
         </Container>
       </main>
     </div>
