@@ -12,10 +12,29 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { DropzoneDialog, FileObject } from 'material-ui-dropzone';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import FolderTree from './FolderTree';
+import AssetCardList from './AssetCardList';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  appBar: {
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
   toolbar: {
     justifyContent: 'space-between'
   },
@@ -44,12 +63,27 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: -drawerWidth,
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  },
 }));
 
 export default function Album() {
   const classes = useStyles();
   const [dialogOpen, dialogSetOpen] = React.useState(false);
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   let uploadedFiles: FileObject[] = [];
 
   const [drawerOpen, drawerSetOpen] = React.useState(false);
@@ -61,15 +95,15 @@ export default function Album() {
   };
 
   return (
-    <React.Fragment>
-      <AppBar position="relative">
+    <div className={classes.root}>
+      <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: drawerOpen })}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            className={clsx(classes.drawerMenuButton, dialogOpen && classes.drawerHide)}
+            className={clsx(classes.drawerMenuButton, drawerOpen && classes.drawerHide)}
           >
             <MenuIcon />
           </IconButton>
@@ -113,21 +147,13 @@ export default function Album() {
           </IconButton>
         </div>
         <Divider />
-        <List>
-            <ListItem button key={1}>
-              <ListItemText primary="test" />
-            </ListItem>
-        </List>
+        <FolderTree />
       </Drawer>
-      <main>
+      <main className={clsx(classes.content, { [classes.contentShift]: drawerOpen })}>
         <Container className={classes.cardGrid} maxWidth="md">
-          <Grid container spacing={4}>
-            {cards.map((card) => (
-              <AssetCard card={card} />
-            ))}
-          </Grid>
+          <AssetCardList assets={[]} />
         </Container>
       </main>
-    </React.Fragment>
+    </div>
   );
 }
