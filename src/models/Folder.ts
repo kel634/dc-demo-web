@@ -15,6 +15,26 @@ export async function loadFolders(): Promise<Folder> {
     .then(buildRootFolder);
 }
 
+export async function createFolder(parentId: number, name: string): Promise<Folder> {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ parentId, name })
+  };
+  
+  return await api<Folder>('https://dc-demo-api.azurewebsites.net/api/Folder', requestOptions);
+}
+
+export async function deleteFolder(folderId: number): Promise<Folder> {
+  const requestOptions = {
+    method: 'DELETE'
+  };
+  
+  return await api<Folder>(`https://dc-demo-api.azurewebsites.net/api/Folder/${folderId}`, requestOptions);
+}
+
 export function getFoldersForBreadcrumbs(current: Folder, selectedFolderID: number): Folder[] {
   let bc: Folder[] = [];
   // if we reached the child, return the folder

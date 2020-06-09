@@ -4,9 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
-import { Button, IconButton, Drawer, Divider, ListItem, ListItemText, List, Toolbar } from '@material-ui/core';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import { DropzoneDialog, FileObject } from 'material-ui-dropzone';
+import { IconButton, Drawer, Divider, Toolbar } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import FolderTree from './FolderTree';
@@ -14,6 +12,9 @@ import AssetCardList from './AssetCardList';
 import { Route, useHistory } from 'react-router-dom';
 import { Folder, buildRootFolder, loadFolders, getFoldersForBreadcrumbs } from '../models/Folder';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
+import UploadAsset from './UploadAsset';
+import CreateFolder from './CreateFolder';
+import DeleteFolder from './DeleteFolder';
 
 const drawerWidth = 240;
 
@@ -37,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     justifyContent: 'space-between'
+  },
+  toolbarbuttons: {
+    display: 'flex'
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
@@ -83,8 +87,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Album() {
   const classes = useStyles();
-  const [dialogOpen, dialogSetOpen] = React.useState(false);
-  let uploadedFiles: FileObject[] = [];
 
   const [drawerOpen, drawerSetOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -109,13 +111,23 @@ export default function Album() {
     setFolderBreadcrumbs(getFoldersForBreadcrumbs(rootFolder, folderId));
   }
 
+  const handleFolderCreate = (folderId: number) => {
+    handleFolderNavigate(folderId);
+  }
+
+  const handleFolderDelete = (folderId: number) => {
+    const parentFolderIdx = folderBreadcrumbs.length > 2 ? folderBreadcrumbs.length - 2 : 0;
+    const parentFolderId = folderBreadcrumbs[parentFolderIdx].folderId;
+    handleFolderNavigate(parentFolderId);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const rf = await loadFolders();
       setRootFolder(rf);
       setFolderBreadcrumbs(getFoldersForBreadcrumbs(rf, currentFolderId));
     };
- 
+
     fetchData();
   }, []);
 
@@ -128,33 +140,17 @@ export default function Album() {
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            className={clsx(classes.drawerMenuButton, drawerOpen && classes.drawerHide)}
-          >
+            className={clsx(classes.drawerMenuButton, drawerOpen && classes.drawerHide)}>
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" color="inherit" noWrap>
-            <FolderBreadcrumbs breadCrumbs={folderBreadcrumbs} />
+            <FolderBreadcrumbs breadCrumbs={folderBreadcrumbs} onFolderNavigate={handleFolderNavigate} />
           </Typography>
-          <Button variant="contained" color="default" startIcon={<CloudUploadIcon />}
-            onClick={() => dialogSetOpen(true)}>
-            Upload
-            </Button>
-
-          <DropzoneDialog
-            acceptedFiles={['image/*']}
-            cancelButtonText={"cancel"}
-            submitButtonText={"submit"}
-            maxFileSize={5000000}
-            open={dialogOpen}
-            fileObjects={uploadedFiles}
-            onClose={() => dialogSetOpen(false)}
-            onSave={(files: any) => {
-              console.log('Files:', files);
-              dialogSetOpen(false);
-            }}
-            showPreviews={true}
-            showFileNamesInPreview={true}
-          />
+          <div className={classes.toolbarbuttons}>
+            <DeleteFolder parentId={currentFolderId} onFolderDelete={handleFolderDelete} />
+            <CreateFolder parentId={currentFolderId} onFolderCreate={handleFolderCreate} />
+            <UploadAsset />
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -172,8 +168,8 @@ export default function Album() {
           </IconButton>
         </div>
         <Divider />
-        <FolderTree rootFolder={rootFolder}  onFolderNavigate={handleFolderNavigate} />
-        
+        <FolderTree rootFolder={rootFolder} onFolderNavigate={handleFolderNavigate} />
+
       </Drawer>
       <main className={clsx(classes.content, { [classes.contentShift]: drawerOpen })}>
         <Container className={classes.cardGrid} maxWidth="md">

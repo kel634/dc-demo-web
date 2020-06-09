@@ -1,5 +1,5 @@
-export async function api<T>(url: string): Promise<T> {
-  return await fetch(url)
+export async function api<T>(url: string, requestOptions?: RequestInit): Promise<T> {
+  return await fetch(url, requestOptions)
     .then(response => {
       if (!response.ok) {
         throw new Error(response.statusText)
