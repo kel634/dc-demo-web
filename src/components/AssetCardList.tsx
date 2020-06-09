@@ -8,7 +8,7 @@ import { getRandomAssets } from '../models/TempData';
 
 export default function AssetCardList(props: any) {
   let history = useHistory();
-  const getFolderId = () => {
+  const getFolderId = (): number => {
     let m = history.location.pathname.match('/([0-9]+)');
     return m ? parseInt(m[1]) : 0;
   }

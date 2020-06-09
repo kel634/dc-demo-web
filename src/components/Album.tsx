@@ -1,20 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import AssetCard from './AssetCard';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { Button, IconButton, Drawer, Divider, ListItem, ListItemText, List } from '@material-ui/core';
+import { Button, IconButton, Drawer, Divider, ListItem, ListItemText, List, Toolbar } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { DropzoneDialog, FileObject } from 'material-ui-dropzone';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import FolderTree from './FolderTree';
 import AssetCardList from './AssetCardList';
-import { Route, Router } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
+import { Folder, buildRootFolder, loadFolders, getFoldersForBreadcrumbs } from '../models/Folder';
+import FolderBreadcrumbs from './FolderBreadcrumbs';
 
 const drawerWidth = 240;
 
@@ -87,13 +86,38 @@ export default function Album() {
   const [dialogOpen, dialogSetOpen] = React.useState(false);
   let uploadedFiles: FileObject[] = [];
 
-  const [drawerOpen, drawerSetOpen] = React.useState(false);
+  const [drawerOpen, drawerSetOpen] = React.useState(true);
   const handleDrawerOpen = () => {
     drawerSetOpen(true);
   };
   const handleDrawerClose = () => {
     drawerSetOpen(false);
   };
+  let history = useHistory();
+  const getFolderId = (): number => {
+    let m = history.location.pathname.match('/([0-9]+)');
+    return m ? parseInt(m[1]) : 0;
+  }
+  const [currentFolderId, setCurrentFolderId] = React.useState<number>(getFolderId());
+
+  const [rootFolder, setRootFolder] = React.useState<Folder>(buildRootFolder([]));
+  const [folderBreadcrumbs, setFolderBreadcrumbs] = React.useState<Folder[]>([rootFolder]);
+
+  const handleFolderNavigate = (folderId: number) => {
+    history.push(`/${folderId.toString()}`);
+    setCurrentFolderId(folderId);
+    setFolderBreadcrumbs(getFoldersForBreadcrumbs(rootFolder, folderId));
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const rf = await loadFolders();
+      setRootFolder(rf);
+      setFolderBreadcrumbs(getFoldersForBreadcrumbs(rf, currentFolderId));
+    };
+ 
+    fetchData();
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -109,8 +133,8 @@ export default function Album() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" color="inherit" noWrap>
-            Album layout
-            </Typography>
+            <FolderBreadcrumbs breadCrumbs={folderBreadcrumbs} />
+          </Typography>
           <Button variant="contained" color="default" startIcon={<CloudUploadIcon />}
             onClick={() => dialogSetOpen(true)}>
             Upload
@@ -148,7 +172,8 @@ export default function Album() {
           </IconButton>
         </div>
         <Divider />
-        <FolderTree />
+        <FolderTree rootFolder={rootFolder}  onFolderNavigate={handleFolderNavigate} />
+        
       </Drawer>
       <main className={clsx(classes.content, { [classes.contentShift]: drawerOpen })}>
         <Container className={classes.cardGrid} maxWidth="md">
