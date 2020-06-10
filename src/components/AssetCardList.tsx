@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import AssetCard from './AssetCard';
-import { Asset } from '../models/Asset';
-import { useHistory } from 'react-router-dom';
-import { getRandomAssets } from '../models/TempData';
+import { Asset, getAssets } from '../models/Asset';
 
 
-export default function AssetCardList(props: any) {
-  let history = useHistory();
-  const getFolderId = (): number => {
-    let m = history.location.pathname.match('/([0-9]+)');
-    return m ? parseInt(m[1]) : 0;
-  }
-  let [currentFolderId, setCurrentFolderId] = useState(getFolderId());
+export default function AssetCardList(props: { folderId: number, newFileCount: number }) {
   let [assets, setAssets] = useState<Asset[]>([]);
 
   useEffect(() => {
-    setCurrentFolderId(getFolderId());
-  }, [props]);
+    const fetchData = async () => {
+      const assetsList = await getAssets(props.folderId);
+      setAssets(assetsList);
+    };
 
-  useEffect(() => {
-    getRandomAssets(currentFolderId).then(data => {
-      setAssets(data);
-    });
-  }, [currentFolderId]);
+    fetchData();
+  }, [props]);
 
   return (
     <Grid container spacing={4}>
       {assets.map((asset) => (
-        <AssetCard key={asset.id} asset={asset} />
+        <AssetCard key={asset.assetId} asset={asset} />
       ))}
     </Grid>
   );

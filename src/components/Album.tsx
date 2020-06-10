@@ -9,7 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import FolderTree from './FolderTree';
 import AssetCardList from './AssetCardList';
-import { Route, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Folder, buildRootFolder, loadFolders, getFoldersForBreadcrumbs } from '../models/Folder';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
 import UploadAsset from './UploadAsset';
@@ -104,6 +104,7 @@ export default function Album() {
 
   const [rootFolder, setRootFolder] = React.useState<Folder>(buildRootFolder([]));
   const [folderBreadcrumbs, setFolderBreadcrumbs] = React.useState<Folder[]>([rootFolder]);
+  const [newFileCount, setNewFileCount] = React.useState<number>(0);
 
   const handleFolderNavigate = (folderId: number) => {
     history.push(`/${folderId.toString()}`);
@@ -119,6 +120,10 @@ export default function Album() {
     const parentFolderIdx = folderBreadcrumbs.length > 2 ? folderBreadcrumbs.length - 2 : 0;
     const parentFolderId = folderBreadcrumbs[parentFolderIdx].folderId;
     handleFolderNavigate(parentFolderId);
+  }
+
+  const handleUploadAssets = () => {
+    setNewFileCount(newFileCount + 1);
   }
 
   useEffect(() => {
@@ -149,7 +154,7 @@ export default function Album() {
           <div className={classes.toolbarbuttons}>
             <DeleteFolder parentId={currentFolderId} onFolderDelete={handleFolderDelete} />
             <CreateFolder parentId={currentFolderId} onFolderCreate={handleFolderCreate} />
-            <UploadAsset />
+            <UploadAsset folderId={currentFolderId} onUploadAssets={handleUploadAssets} />
           </div>
         </Toolbar>
       </AppBar>
@@ -173,7 +178,12 @@ export default function Album() {
       </Drawer>
       <main className={clsx(classes.content, { [classes.contentShift]: drawerOpen })}>
         <Container className={classes.cardGrid} maxWidth="md">
-          <Route component={AssetCardList} />;
+          {!currentFolderId && (
+            <Typography variant="h4" color="inherit" noWrap>
+              Select a folder from the sidebar, or add a new folder.
+            </Typography>
+          )}
+          <AssetCardList folderId={currentFolderId} newFileCount={newFileCount} />
         </Container>
       </main>
     </div>

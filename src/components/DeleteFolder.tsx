@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from '@material-ui/core';
+import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 import { deleteFolder } from '../models/Folder';
 
@@ -32,7 +32,7 @@ export default function DeleteFolder(props: { parentId: number, onFolderDelete: 
 
   return (
     <div className={classes.toolbarbutton}>
-      <Button variant="contained" color="default" startIcon={<DeleteIcon />} onClick={handleClickOpen}></Button>
+      <Button variant="contained" color="default" startIcon={<DeleteIcon />} onClick={handleClickOpen}>Delete Folder</Button>
       <Dialog open={dialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Are you sure?</DialogTitle>
         <DialogContent>

@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Asset } from '../models/Asset';
+import AssetDetails from './AssetDetails';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   cardMedia: {
-    paddingTop: '56.25%', // 16:9
+    paddingTop: '100%', // 16:9
   },
   cardContent: {
     flexGrow: 1,
@@ -27,7 +27,7 @@ export default function AssetCard(props: { asset: Asset }) {
   const classes = useStyles();
 
   return (
-    <Grid item key={props.asset.id} xs={12} sm={6} md={4}>
+    <Grid item key={props.asset.assetId} xs={12} sm={6} md={4}>
       <Card className={classes.card}>
         <CardMedia
           className={classes.cardMedia}
@@ -38,14 +38,9 @@ export default function AssetCard(props: { asset: Asset }) {
           <Typography gutterBottom variant="h5" component="h2">
             {props.asset.displayName}
           </Typography>
-          <Typography>
-            AssetID = { props.asset.id }
-          </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" color="primary">
-            Details
-          </Button>
+          <AssetDetails assetId={props.asset.assetId} />
         </CardActions>
       </Card>
     </Grid>

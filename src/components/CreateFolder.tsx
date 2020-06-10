@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from '@material-ui/core';
+import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@material-ui/core';
 import { CreateNewFolder as CreateNewFolderIcon } from '@material-ui/icons';
 import { createFolder } from '../models/Folder';
 
@@ -33,7 +33,7 @@ export default function CreateFolder(props: { parentId: number, onFolderCreate: 
 
   return (
     <div className={classes.toolbarbutton}>
-      <Button variant="contained" color="default" startIcon={<CreateNewFolderIcon />} onClick={handleClickOpen}></Button>
+      <Button variant="contained" color="default" startIcon={<CreateNewFolderIcon />} onClick={handleClickOpen}>Add Folder</Button>
       <Dialog open={dialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add new folder</DialogTitle>
         <DialogContent>

@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { CloudUpload } from '@material-ui/icons';
 import { DropzoneDialog, FileObject } from 'material-ui-dropzone';
+import { uploadAssets } from '../models/Asset';
 
 const useStyles = makeStyles((theme) => ({
   toolbarbutton: {
@@ -10,10 +11,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UploadAsset() {
+export default function UploadAsset(props: { folderId: number, onUploadAssets: () => void }) {
   const classes = useStyles();
   const [dialogOpen, dialogSetOpen] = React.useState(false);
   let uploadedFiles: FileObject[] = [];
+
+  const onSaveFiles = async (files: any) => {
+    await uploadAssets(files, props.folderId);
+    dialogSetOpen(false);
+    props.onUploadAssets();
+  }
 
   return (
     <div className={classes.toolbarbutton}>
@@ -26,10 +33,7 @@ export default function UploadAsset() {
         open={dialogOpen}
         fileObjects={uploadedFiles}
         onClose={() => dialogSetOpen(false)}
-        onSave={(files: any) => {
-          console.log('Files:', files);
-          dialogSetOpen(false);
-        }}
+        onSave={onSaveFiles}
         showPreviews={true}
         showFileNamesInPreview={true}
       />
